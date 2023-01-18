@@ -3,7 +3,12 @@ actor {
     //Feel free to DM me any question.
     type Proposal = {};// TO DEFINE;
 
-    public shared({caller}) func submit_proposal(this_payload : Text) : async {#Ok : Proposal; #Err : Text} {
+
+    public shared({caller}) func submit_proposal(this_payload : Text) : async {#Ok : Proposal; #Err : Text} {      
+
+         // Proyecto sin cambios
+
+
         return #Err("Not implemented yet");
     };
 
