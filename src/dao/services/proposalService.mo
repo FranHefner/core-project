@@ -7,10 +7,14 @@ module ProposalService {
  
    
 
-public func valitations ( proposal:Text) :async Bool{
+  //-----
+    public func valitations(proposal : Text) : async Bool {
 
-    return true;
-}
-
+        if (textProposal.equal("")) {
+            return true
+        } else {
+            return false
+        }
+    };   
 
 }

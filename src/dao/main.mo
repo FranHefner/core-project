@@ -13,15 +13,7 @@ actor {
         stable var proposalsIdCount : Nat = 0;
 
     /// Funciones del modulo proposalService.
-    //-----
-    public func valitations(proposal : Text) : async Bool {
-
-        if (textProposal.equal("")) {
-            return true
-        } else {
-            return false
-        }
-    };   
+  
     public func putProposal (proposal : Text): async ProposalType.Proposal {
           
           
@@ -40,7 +32,7 @@ actor {
     } {
          let id : Nat = proposalsIdCount;
 
-         if (valitations(textProposal)){
+         if ( (textProposal)){
 
                 putProposal(textProposal)
 

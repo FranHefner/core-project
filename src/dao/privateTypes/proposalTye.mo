@@ -5,8 +5,7 @@ module ProposalType {
     
  type Proposal = {
 
-        userPrincipal : Principal;
-        walletID : Text;
+        userPrincipal : Principal;        
         title : Text;
         description : Text;
         voteCount: Int;
