@@ -2,73 +2,51 @@ import HashMap "mo:base/HashMap";
 import Nat "mo:base/Nat";
 import Hash "mo:base/Hash";
 import Principal "mo:base/Principal";
-import ProposalTye "privateTypes/proposalTye";
-import ProposalService "service/proposalService";
-import ProposalTye "privateTypes/proposalTye";
 import Error "mo:base/Error";
+import ProposalService "services/proposalService";
+import ProposalTye "privateTypes/proposalTye";
+import PrincipalServices "services/principalServices";
+import Text "mo:base/Text";
 
 actor {
-     // codigo del modulo repository -> proposalData
-        var proposals = HashMap.HashMap<Nat, ProposalType.Proposal>(1, Nat.equal, Hash.hash);
-        stable var proposalsIdCount : Nat = 0;
-
-    /// Funciones del modulo proposalService.
-  
-    public func putProposal (proposal : Text): async ProposalType.Proposal {
-          
-          
-          proposalsIdCount += 1;
-          proposals.put(id, ProposalType.Proposal);
-          let pRes : ?Proposal = proposals.get(id);
-
-          return pRes;
-        
-    };
-    //----------------
 
     public shared ({ caller }) func submit_proposal(textProposal : Text) : async {
-        #Ok : Proposal;
+        #Ok : ProposalTye.Proposal;
         #Err : Text
     } {
-         let id : Nat = proposalsIdCount;
-
-         if ( (textProposal)){
-
-                putProposal(textProposal)
-
-                 
-
-
-            return #Ok("The proposal was successful :" + pRes);
-
-         }else{
-             return #Error ("The proposal did not pass the validations satisfactorily");
-         }
+        if (PrincipalServices.isValid(caller.caller)) {
+            let pRes : ?ProposalTye.Proposal = ProposalService.putProposal(textProposal);
+            switch (pRes) {
+                case (null) {
+                    return #Error("The proposal did not pass the validations satisfactorily")
+                };
+                case (?pRes) {
+                    return #Ok(pRes)
+                }
+            }
+        } else {
+            return #Error("The Principal is not a valid account for this DAO")
+        }
     };
 
     public shared ({ caller }) func vote(proposal_id : Int, yes_or_no : Bool) : async {
         #Ok : (Nat, Nat);
         #Err : Text
     } {
+        if (PrincipalServices.isValid(caller.caller)) {
+            return ProposalService.voteProposal(proposal_id, yes_or_no);
+        } else {
+            return #Error("The Principal is not a valid account for this DAO")
+        }
 
-        let pRes : ?Post = proposals.get(id);
-
-        /*  switch (pRes) {
-        case (null) {
-            "The proposal that you are wanting to vote on does not accept votes.";
-        };
-        case (?currentPost) {
-
-        
-        return #Err("Not implemented yet");*/
     };
 
-    public query func get_proposal(id : Int) : async ?Proposal {
-        return null
+    public query func get_proposal(id : Int) : async ?ProposalTye.Proposal {
+        return ProposalService.getProposal(id)
     };
 
-    public query func get_all_proposals() : async [(Int, Proposal)] {
-        return []
+    public query func get_all_proposals() : async [(Int, ProProposalTye.Proposalposal)] {
+        return ProposalService.getAllProposals()
     };
 
 }

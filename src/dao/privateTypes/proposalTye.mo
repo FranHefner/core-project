@@ -1,16 +1,20 @@
-import StateType "../privateTypes/stateType";
+module PrivateType {
 
-module ProposalType {
+    public type Proposal = {
 
-    
- type Proposal = {
-
-        userPrincipal : Principal;        
+        userPrincipal : Principal;
         title : Text;
         description : Text;
-        voteCount: Int;
-        state: StateType.State;
+        voteCount : Int;
+        state : State
+    };
+
+    public type State = {
+        #Adopted;
+        #Executed;
+        #Rejected;
+        #Open;
+        #Failed
     };
 
 }
-
