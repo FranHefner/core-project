@@ -8,9 +8,9 @@ module ProposalService {
     public func valitations(proposal : Text) : async Bool {
 
         if (textProposal.equal("")) {
-            return true
-        } else {
             return false
+        } else {
+            return true
         }
     };
 
@@ -49,16 +49,39 @@ module ProposalService {
         }
     };
 
-    public func putProposal(textProposal : Text) : async ?ProposalTye.Proposal {
+    public func submitProposal(textProposal : Text, principal: Principal )  : async {
+        #Ok : ProposalTye.Proposal;
+        #Err : Text
+    } {
 
         if (valitations(textProposal)) {
+
             let id : Nat = proposalsIdCount;
             proposalsIdCount += 1;
-            ProposalsData.proposals.put(id, ProposalsData.proposals);
+
+             let proposal : ProposalTye.Proposal  = {                    
+                        userPrincipal  = principal;
+                        title  = Text.extract(textProposal,0,47);
+                        description = textProposal;
+                        voteCount = 0;
+                        state = State.Open;
+                };
+            
+            ProposalsData.proposals.put(id, proposal);
             let pRes : ?ProposalTye.Proposal = getProposal(id);
-            return pRes
+
+            switch (pRes) {
+            case (null) {
+                return #Error("There was an error adding the proposal, please try again")
+            };
+
+            case (?proposal) {
+                return #Ok(pRes)
+            };
+            }
+          
         } else {
-            return null
+           return #Error("The proposal did not satisfactorily pass the validations..")
         }
 
     };
@@ -72,7 +95,6 @@ module ProposalService {
     public func getAllProposals() : async [(Int, ProProposalTye.Proposalposal)] {
         let proposalIter : Iter.Iter<(Nat, ProposalTye.Proposal)> = ProposalsData.proposals.entries();
         let proposalArray : [(Nat, ProposalTye.Proposal)] = Iter.toArray(proposalIter);
-
         return postsArray
     };
 
@@ -86,9 +108,21 @@ module ProposalService {
 
             let proposal : ?ProposalTye.Proposal = getProposal(idProposal);
 
+                 let updateProposal : ProposalTye.Proposal  = {                    
+                        userPrincipal  = proposal.userPrincipal;
+                        title  = proposal.title;
+                        description = proposal.description;
+                        voteCount = voteCount + 1;
+                        state = proposal.state;
+                };
+
+                 posts.put(proposal_id, updatedPost);
+
+                   return #Ok; // Todo:  Devolver   (Nat, Nat);                     
+
+
         } else {
             return validOK
         }
-
     }
 }

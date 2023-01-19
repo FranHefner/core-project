@@ -1,7 +1,6 @@
 module PrivateType {
 
     public type Proposal = {
-
         userPrincipal : Principal;
         title : Text;
         description : Text;
