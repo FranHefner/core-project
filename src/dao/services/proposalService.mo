@@ -1,20 +1,25 @@
 import Bool "mo:base/Bool";
 import ProposalTye "../privateTypes/proposalTye";
-import ProposalsData "../repository/proposalsData";
+import ProposalsDATA "../repository/proposalsData";
 import Text "mo:base/Text";
+import Iter "mo:base/Iter";
+import HashMap "mo:base/HashMap";
+
 
 module ProposalService {
 
+    
+    
     public func valitations(proposal : Text) : async Bool {
 
-        if (textProposal.equal("")) {
+        if (proposal =="") {
             return false
         } else {
             return true
         }
     };
 
-    public func voteValidataions(idProposal : Int) : async {
+    public func voteValidataions(idProposal : Nat) : async {
         #Ok : Text;
         #Err : Text
     } {
@@ -23,26 +28,26 @@ module ProposalService {
 
         switch (proposal) {
             case (null) {
-                return #Error("You're trying to update a non-existent Proposal.")
+                return #Err("You're trying to update a non-existent Proposal.")
             };
             case (?proposal) {
-                let stateProposal : ProposalType.State = proposal.state;
+                let stateProposal : ProposalTye.State = proposal.state;
 
                 switch (stateProposal) {
-                    case (Adopted) {
+                    case (#Adopted) {
                         return #Err("You're trying to vote a Adopted Proposal.")
                     };
-                    case (Executed) {
+                    case (#Executed) {
                         return #Err("You're trying to update a Executed Proposal.")
                     };
-                    case (Rejected) {
+                    case (#Rejected) {
                         return #Err("You're trying to update a Rejected Proposal.")
                     };
-                    case (Failed) {
+                    case (#Failed) {
                         return #Err("You're trying to update a Failed Proposal.")
                     };
-                    case (Open) {
-                        return #OK("The proposal is open to vote")
+                    case (#Open) {
+                        return #Ok("The proposal is open to vote")
                     }
                 }
             }
@@ -54,7 +59,7 @@ module ProposalService {
         #Err : Text
     } {
 
-        if (valitations(textProposal)) {
+        if ( valitations(textProposal) == true) {
 
             let id : Nat = proposalsIdCount;
             proposalsIdCount += 1;
@@ -64,41 +69,49 @@ module ProposalService {
                         title  = Text.extract(textProposal,0,47);
                         description = textProposal;
                         voteCount = 0;
-                        state = State.Open;
+                        state = #Open;
                 };
             
             ProposalsData.proposals.put(id, proposal);
+
             let pRes : ?ProposalTye.Proposal = getProposal(id);
 
             switch (pRes) {
-            case (null) {
-                return #Error("There was an error adding the proposal, please try again")
-            };
+                
+                case (null) {
+                    return #Err("There was an error adding the proposal, please try again")
+                };
 
-            case (?proposal) {
-                return #Ok(pRes)
-            };
+                case (?propuestaOK) {
+                    return #Ok(propuestaOK)
+                };
             }
           
         } else {
-           return #Error("The proposal did not satisfactorily pass the validations..")
+           return #Err("The proposal did not satisfactorily pass the validations..")
         }
 
     };
 
-    public func getProposal(id : Int) : async ProposalTye.Proposal {
+    public func getProposal(id : Nat, proposals: HashMap.HashMap<Nat, ProposalTye.Proposal>) : async ?ProposalTye.Proposal {
+        // ProposalsData.proposals.get(id);
+             ProposalsDATA.getProposal(id);
+        // proposals =ProposalsData.Proposal.
+   //  ProposalsData.Proposal.getProposals(id);  
+  
+      //     ProposalsData.getProposal(id);
+           
 
-        return let pRes : ?ProposalTye.Proposal = ProposalsData.proposals.get(id);
-
+      
     };
 
-    public func getAllProposals() : async [(Int, ProProposalTye.Proposalposal)] {
+    public func getAllProposals() : async [(Nat, ProposalTye.Proposal)] {
         let proposalIter : Iter.Iter<(Nat, ProposalTye.Proposal)> = ProposalsData.proposals.entries();
         let proposalArray : [(Nat, ProposalTye.Proposal)] = Iter.toArray(proposalIter);
-        return postsArray
+        return proposalArray
     };
 
-    public func voteProposal(proposal_id : Int, yes_or_no : Bool) : async {
+    public func voteProposal(proposal_id : Nat, yes_or_no : Bool) : async {
         #Ok : (Nat, Nat);
         #Err : Text
     } {
@@ -118,7 +131,7 @@ module ProposalService {
 
                  posts.put(proposal_id, updatedPost);
 
-                   return #Ok; // Todo:  Devolver   (Nat, Nat);                     
+                return #Ok; // Todo:  Devolver   (Nat, Nat);                     
 
 
         } else {
