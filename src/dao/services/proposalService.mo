@@ -1,16 +1,15 @@
 import Bool "mo:base/Bool";
-import ProposalTye "../privateTypes/proposalTye";
 import ProposalsDATA "../repository/proposalsData";
 import Text "mo:base/Text";
 import Iter "mo:base/Iter";
 import HashMap "mo:base/HashMap";
+import PrivateTypes "../privateTypes/privateTypes";
 
 
-module ProposalService {
-
-    
-    
-    public func valitations(proposal : Text) : async Bool {
+module ProposalService{
+           
+   
+    public func valitations(proposal : Text) : Bool { 
 
         if (proposal =="") {
             return false
@@ -19,7 +18,7 @@ module ProposalService {
         }
     };
 
-    public func voteValidataions(idProposal : Nat) : async {
+  /*  public func voteValidataions(idProposal : Nat) : {
         #Ok : Text;
         #Err : Text
     } {
@@ -53,28 +52,27 @@ module ProposalService {
             }
         }
     };
+*/
+    
 
-    public func submitProposal(textProposal : Text, principal: Principal )  : async {
-        #Ok : ProposalTye.Proposal;
+    public func submitProposal(textProposal : Text, principal: Principal, pDATA : ProposalsDATA.Proposals )  :  {
+        #Ok : ?PrivateTypes.Proposal;
         #Err : Text
     } {
 
         if ( valitations(textProposal) == true) {
 
-            let id : Nat = proposalsIdCount;
-            proposalsIdCount += 1;
-
-             let proposal : ProposalTye.Proposal  = {                    
+            let proposal : PrivateTypes.Proposal  = {                    
                         userPrincipal  = principal;
-                        title  = Text.extract(textProposal,0,47);
+                        title  = textProposal; // Text.extract(textProposal,0,47);
                         description = textProposal;
                         voteCount = 0;
                         state = #Open;
                 };
             
-            ProposalsData.proposals.put(id, proposal);
+            pDATA.setProposals(proposal);
 
-            let pRes : ?ProposalTye.Proposal = getProposal(id);
+            let pRes : ?PrivateTypes.Proposal =pDATA.getProposals(getProposalsSize());
 
             switch (pRes) {
                 
@@ -82,8 +80,9 @@ module ProposalService {
                     return #Err("There was an error adding the proposal, please try again")
                 };
 
-                case (?propuestaOK) {
-                    return #Ok(propuestaOK)
+                case (?propuestaOK) {    
+                 
+                    return #Ok(pDATA.getProposals(id));
                 };
             }
           
@@ -93,24 +92,33 @@ module ProposalService {
 
     };
 
-    public func getProposal(id : Nat, proposals: HashMap.HashMap<Nat, ProposalTye.Proposal>) : async ?ProposalTye.Proposal {
-        // ProposalsData.proposals.get(id);
-             ProposalsDATA.getProposal(id);
-        // proposals =ProposalsData.Proposal.
-   //  ProposalsData.Proposal.getProposals(id);  
-  
-      //     ProposalsData.getProposal(id);
-           
-
+    /*public func getProposal(id : Nat, proposals: HashMap.HashMap<Nat, ProposalTye.Proposal>) : async ?ProposalTye.Proposal {
       
-    };
+         
+          
+          
+         // let _Proporsals :  HashMap.HashMap<Nat, ProposalTye.Proposal> = ProposalsDATA.Proposals.getProposal;
+       
+         // let _Proporsals :  ?HashMap.HashMap<Nat, ProposalTye.Proposal> = null;
+          // var  test1 : ?ProposalsDATA.Proposals.proposals = null;
+          
+         //   stable var test2 : ?ProposalsDATA.Proposals= null;
+             
+          
+        
+        //      return _Proporsals.getProposals(id);
+     
+      
+    };*/
 
-    public func getAllProposals() : async [(Nat, ProposalTye.Proposal)] {
+  /*  public func getAllProposals() : async [(Nat, ProposalTye.Proposal)] {
         let proposalIter : Iter.Iter<(Nat, ProposalTye.Proposal)> = ProposalsData.proposals.entries();
         let proposalArray : [(Nat, ProposalTye.Proposal)] = Iter.toArray(proposalIter);
         return proposalArray
     };
+*/
 
+/*
     public func voteProposal(proposal_id : Nat, yes_or_no : Bool) : async {
         #Ok : (Nat, Nat);
         #Err : Text
@@ -137,5 +145,6 @@ module ProposalService {
         } else {
             return validOK
         }
-    }
+    }*/
 }
+

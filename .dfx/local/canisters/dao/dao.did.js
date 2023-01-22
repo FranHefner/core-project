@@ -1,20 +1,23 @@
 export const idlFactory = ({ IDL }) => {
-  const Proposal = IDL.Record({});
+  const State = IDL.Variant({
+    'Failed' : IDL.Null,
+    'Open' : IDL.Null,
+    'Rejected' : IDL.Null,
+    'Executed' : IDL.Null,
+    'Adopted' : IDL.Null,
+  });
+  const Proposal = IDL.Record({
+    'title' : IDL.Text,
+    'voteCount' : IDL.Int,
+    'description' : IDL.Text,
+    'state' : State,
+    'userPrincipal' : IDL.Principal,
+  });
   return IDL.Service({
-    'get_all_proposals' : IDL.Func(
-        [],
-        [IDL.Vec(IDL.Tuple(IDL.Int, Proposal))],
-        ['query'],
-      ),
-    'get_proposal' : IDL.Func([IDL.Int], [IDL.Opt(Proposal)], ['query']),
+    'get_proposal' : IDL.Func([IDL.Nat], [IDL.Opt(Proposal)], []),
     'submit_proposal' : IDL.Func(
         [IDL.Text],
-        [IDL.Variant({ 'Ok' : Proposal, 'Err' : IDL.Text })],
-        [],
-      ),
-    'vote' : IDL.Func(
-        [IDL.Int, IDL.Bool],
-        [IDL.Variant({ 'Ok' : IDL.Tuple(IDL.Nat, IDL.Nat), 'Err' : IDL.Text })],
+        [IDL.Variant({ 'Ok' : IDL.Opt(Proposal), 'Err' : IDL.Text })],
         [],
       ),
   });

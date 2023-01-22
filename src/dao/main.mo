@@ -1,27 +1,37 @@
 import Error "mo:base/Error";
-import ProposalTye "privateTypes/proposalTye";
 import ProposalService "services/proposalService";
 import PrincipalServices "services/principalServices";
 import Text "mo:base/Text";
 import Principal "mo:base/Principal";
 import HashMap "mo:base/HashMap";
+import ProposalsData "repository/proposalsData";
+import PrivateTypes "privateTypes/privateTypes";
 
 actor {
-      /*  var proposals = HashMap.HashMap<Int, ProposalTye.Proposal>(1, Int.equal, Hash.hash);
-        var proposalsIdCount : Nat = 0;*/
+      
 
-    public shared ({ caller }) func submit_proposal(textProposal : Text) : async {
-        #Ok : ProposalTye.Proposal;
+    // private stable var _ProposalStable : [(Nat, PrivateTypes.Proposal)] = [];
+
+    var _Proposals : ProposalsData.Proposals = ProposalsData.Proposals();
+
+
+    public shared ({ caller }) func submit_proposal(textProposal: Text) : async {
+        #Ok : ?PrivateTypes.Proposal;
         #Err : Text
     } {
-        if (PrincipalServices.isValid(caller)) { // Todo: Revisar como pasar el contexto con el principal
-            return ProposalService.submitProposal(textProposal, caller ) // Todo: Revisar como pasarle el principal " caller.getPrincial() "" 
+
+        if (PrincipalServices.isValid(caller)) { 
+             
+           return (ProposalService.submitProposal(textProposal, caller, _Proposals)); 
+               
         } else {
-            return #Err("The Principal is not a valid account for this DAO")
+            return #Err("The Principal is not a valid account for this DAO");
         }
     };
 
-    public shared ({ caller }) func vote(proposal_id : Nat, yes_or_no : Bool) : async {
+
+
+  /* public shared ({ caller }) func vote(proposal_id : Nat, yes_or_no : Bool) : async {
         #Ok : (Nat, Nat);
         #Err : Text
     } {
@@ -31,23 +41,45 @@ actor {
             return #Err("The Principal is not a valid account for this DAO")
         }
     };
+*/
+    public shared ({ caller }) func get_proposal(id : Nat) : async ?PrivateTypes.Proposal {
 
-    public query func get_proposal(id : Nat) : async ?ProposalTye.Proposal {
+        if (PrincipalServices.isValid(caller)) {
+          return _Proposals.getProposals(id);
+        } else {
+           return null
+       }
+    };
+
+    public query func get_all_proposals() : async [(Nat, PrivateTypes.Proposal)] {
 
         if (PrincipalServices.isValid(caller.Principal)) {
-            return ProposalService.getProposal(id)
+            return _Proposals.getAllProposals()
         } else {
             return null
         }
     };
 
-    public query func get_all_proposals() : async [(Nat, ProProposalTye.Proposalposal)] {
+  /*   public func isValid(principal : Principal) : async Bool {        
+        return true; // Todo: Agregar Validaciones. Como si tiene tokens para pertenecer al DAO
+    }; 
 
-        if (PrincipalServices.isValid(caller.Principal)) {
-            return ProposalService.getAllProposals()
-        } else {
-            return null
-        }
+*/
+
+
+
+
+
+/*
+    system func  preupgrade() {
+
+         _ProposalStable := ?_Proposals.preupgrade();
+    
     };
+
+     system func postupgrade() {
+         _ProposalStable.postupgrade(_UsersUD);
+          _ProposalStable := null;
+     };*/
 
 }

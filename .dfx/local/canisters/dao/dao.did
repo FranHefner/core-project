@@ -1,19 +1,23 @@
-type Proposal = record {};
+type State = 
+ variant {
+   Adopted;
+   Executed;
+   Failed;
+   Open;
+   Rejected;
+ };
+type Proposal = 
+ record {
+   description: text;
+   state: State;
+   title: text;
+   userPrincipal: principal;
+   voteCount: int;
+ };
 service : {
-  get_all_proposals: () -> (vec record {
-                                  int;
-                                  Proposal;
-                                }) query;
-  get_proposal: (int) -> (opt Proposal) query;
+  get_proposal: (nat) -> (opt Proposal);
   submit_proposal: (text) -> (variant {
                                 Err: text;
-                                Ok: Proposal;
+                                Ok: opt Proposal;
                               });
-  vote: (int, bool) -> (variant {
-                          Err: text;
-                          Ok: record {
-                                nat;
-                                nat;
-                              };
-                        });
 }
