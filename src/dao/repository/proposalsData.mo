@@ -37,6 +37,7 @@ module ProposalsDATA {
 
         }
   
+  // TODO: for canister upgrade. 
 /*
         public func preupgrade() : Proposals {
             return ({
@@ -44,11 +45,11 @@ module ProposalsDATA {
             })
         };
 
-        public func postupgrade(ud : ?Proposals) {
-            switch(ud) {
+        public func postupgrade(p : ?Proposals) {
+            switch(p) {
                 case(null) {};
-                case(? ud) {
-                    for((principal, users) in ud.users.vals()){
+                case(? p) {
+                    for((principal, p2) in ud.p.vals()){
                         _Proposals.put(, );
                     };
                 };

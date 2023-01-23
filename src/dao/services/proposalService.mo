@@ -83,7 +83,7 @@ module ProposalService {
 
     };
 
-    public func voteProposal(proposal_id : Nat, yes_or_no : Bool, pDATA : ProposalsDATA.Proposals) : {
+    public func voteProposal(proposal_id : Nat, yes_or_no : Bool, pDATA : ProposalsDATA.Proposals, votingPower : Nat) : {
         #Ok : (Nat, Nat);
         #Err : Text
     } {
@@ -100,15 +100,20 @@ module ProposalService {
                 case (?propuestaOK) {
                     var voteCount : Nat = propuestaOK.voteCount;
 
+                    var newState : PrivateTypes.State = #Open;
+                    if (votingPower + propuestaOK.voteCount > 100) // TODO: Upgrade calc voting power
+                    {
+                        newState := #Adopted
+                    };
                     var updateProposal : PrivateTypes.Proposal = {
                         userPrincipal = propuestaOK.userPrincipal;
                         title = propuestaOK.title;
                         description = propuestaOK.description;
                         voteCount = propuestaOK.voteCount + 1;
-                        state = propuestaOK.state
+                        state = newState
                     };
 
-                    pDATA.updateProposal(proposal_id,updateProposal);
+                    pDATA.updateProposal(proposal_id, updateProposal);
 
                     return #Ok(proposal_id, voteCount)
                 }
@@ -117,7 +122,6 @@ module ProposalService {
         } else {
             return #Err(voteValidataions(proposal_id, pDATA))
         };
-        
 
     };
 

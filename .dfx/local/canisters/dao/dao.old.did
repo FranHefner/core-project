@@ -1,0 +1,35 @@
+type State = 
+ variant {
+   Adopted;
+   Executed;
+   Failed;
+   Open;
+   Rejected;
+ };
+type Proposal = 
+ record {
+   description: text;
+   state: State;
+   title: text;
+   userPrincipal: principal;
+   voteCount: nat;
+ };
+service : {
+  balance_check2: () -> (nat);
+  get_all_proposals: () -> (vec record {
+                                  nat;
+                                  Proposal;
+                                }) query;
+  get_proposal: (nat) -> (opt Proposal) query;
+  submit_proposal: (text) -> (variant {
+                                Err: text;
+                                Ok: opt Proposal;
+                              });
+  vote: (nat, bool) -> (variant {
+                          Err: text;
+                          Ok: record {
+                                nat;
+                                nat;
+                              };
+                        });
+}
