@@ -1,19 +1,36 @@
 import Principal "mo:base/Principal";
 import Bool "mo:base/Bool";
 
+module {
 
-module{
+    //Todo: Add more validations.
 
+    public func isValid(principal : Principal) :  Bool {
 
-     public func isValid(principal:Principal) : Bool {    
-        return true; // Todo: Agregar Validaciones. Como si tiene tokens para pertenecer al DAO
-    }; 
-
-    //Todo verificar cantidad token y devolver el voting power
-/*
-   public shared (msg) func whoami() : async Principal {
-        msg.caller;
+        return true;
     };
-*/
+
+     // check balance
+    public func balance_check ( principal: Principal): async Bool {
+
+         let balance : actor { icrc1_balance_of : ({owner : Principal; subbacount:?[Nat8]}) -> async Nat} = actor "db3eq-6iaaa-aaaah-abz6a-cai";
+        
+         let response = await balance.icrc1_balance_of({ owner = principal; subbacount = null});
+         
+         var cantTokensOK : Nat = 0;
+      
+        if (cantTokensOK > 0 )
+        {
+            return true;
+        }else{
+            return false;
+        }         
+        // return response;  
+
+    }
+
+    
+
+
 
 }

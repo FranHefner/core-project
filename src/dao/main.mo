@@ -12,13 +12,16 @@ actor {
     // private stable var _ProposalStable : [(Nat, PrivateTypes.Proposal)] = [];
 
     var _Proposals : ProposalsData.Proposals = ProposalsData.Proposals();
+    var balanceOK : Bool = false;
+
 
     public shared ({ caller }) func submit_proposal(textProposal : Text) : async {
         #Ok : ?PrivateTypes.Proposal;
         #Err : Text
     } {
-
-        if (PrincipalServices.isValid(caller)) {
+        // balanceOK :=  await PrincipalServices.balance_check(caller);
+       
+        if (PrincipalServices.isValid(caller) and (await PrincipalServices.balance_check(caller))) {
             return (ProposalService.submitProposal(textProposal, caller, _Proposals))
         } else {
             return #Err("The Principal is not a valid account for this DAO")
@@ -42,5 +45,20 @@ actor {
 
     public query func get_all_proposals() : async [(Nat, PrivateTypes.Proposal)] {
         return _Proposals.getAllProposals()
-    }
+    };
+
+  
+ 
+    public func balance_check2 ( principal: Principal): async Nat {
+
+         let balance : actor { icrc1_balance_of : ({owner : Principal; subbacount:?[Nat8]}) -> async Nat} = actor "db3eq-6iaaa-aaaah-abz6a-cai";
+        
+         let response = await balance.icrc1_balance_of({ owner = principal; subbacount = null});
+         
+         return response;        
+    };
+
+  
+
+    
 }
