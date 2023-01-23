@@ -12,12 +12,23 @@ type Proposal =
    state: State;
    title: text;
    userPrincipal: principal;
-   voteCount: int;
+   voteCount: nat;
  };
 service : {
-  get_proposal: (nat) -> (opt Proposal);
+  get_all_proposals: () -> (vec record {
+                                  nat;
+                                  Proposal;
+                                }) query;
+  get_proposal: (nat) -> (opt Proposal) query;
   submit_proposal: (text) -> (variant {
                                 Err: text;
                                 Ok: opt Proposal;
                               });
+  vote: (nat, bool) -> (variant {
+                          Err: text;
+                          Ok: record {
+                                nat;
+                                nat;
+                              };
+                        });
 }

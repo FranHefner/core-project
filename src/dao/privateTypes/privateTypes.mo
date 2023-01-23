@@ -4,7 +4,7 @@ module PrivateType {
         userPrincipal : Principal;
         title : Text;
         description : Text;
-        voteCount : Int;
+        voteCount : Nat;
         state : State
     };
 

@@ -5,9 +5,7 @@ import Bool "mo:base/Bool";
 module{
 
 
-     public func isValid(principal:Principal) : Bool {     
-        
-           
+     public func isValid(principal:Principal) : Bool {    
         return true; // Todo: Agregar Validaciones. Como si tiene tokens para pertenecer al DAO
     }; 
 

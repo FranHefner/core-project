@@ -8,78 +8,39 @@ import ProposalsData "repository/proposalsData";
 import PrivateTypes "privateTypes/privateTypes";
 
 actor {
-      
 
     // private stable var _ProposalStable : [(Nat, PrivateTypes.Proposal)] = [];
 
     var _Proposals : ProposalsData.Proposals = ProposalsData.Proposals();
 
-
-    public shared ({ caller }) func submit_proposal(textProposal: Text) : async {
+    public shared ({ caller }) func submit_proposal(textProposal : Text) : async {
         #Ok : ?PrivateTypes.Proposal;
         #Err : Text
     } {
 
-        if (PrincipalServices.isValid(caller)) { 
-             
-           return (ProposalService.submitProposal(textProposal, caller, _Proposals)); 
-               
-        } else {
-            return #Err("The Principal is not a valid account for this DAO");
-        }
-    };
-
-
-
-  /* public shared ({ caller }) func vote(proposal_id : Nat, yes_or_no : Bool) : async {
-        #Ok : (Nat, Nat);
-        #Err : Text
-    } {
-        if (PrincipalServices.isValid(caller.Principal)) {
-            return ProposalService.voteProposal(proposal_id, yes_or_no)
+        if (PrincipalServices.isValid(caller)) {
+            return (ProposalService.submitProposal(textProposal, caller, _Proposals))
         } else {
             return #Err("The Principal is not a valid account for this DAO")
         }
     };
-*/
-    public shared ({ caller }) func get_proposal(id : Nat) : async ?PrivateTypes.Proposal {
 
+    public shared ({ caller }) func vote(proposal_id : Nat, yes_or_no : Bool) : async {
+        #Ok : (Nat, Nat);
+        #Err : Text
+    } {
         if (PrincipalServices.isValid(caller)) {
-          return _Proposals.getProposals(id);
+            return ProposalService.voteProposal(proposal_id, yes_or_no, _Proposals)
         } else {
-           return null
-       }
-    };
-
-    public query func get_all_proposals() : async [(Nat, PrivateTypes.Proposal)] {
-
-        if (PrincipalServices.isValid(caller.Principal)) {
-            return _Proposals.getAllProposals()
-        } else {
-            return null
+            return #Err("The Principal is not a valid account for this DAO")
         }
     };
 
-  /*   public func isValid(principal : Principal) : async Bool {        
-        return true; // Todo: Agregar Validaciones. Como si tiene tokens para pertenecer al DAO
-    }; 
-
-*/
-
-
-
-
-
-/*
-    system func  preupgrade() {
-
-         _ProposalStable := ?_Proposals.preupgrade();
-    
+    public query func get_proposal(id : Nat) : async ?PrivateTypes.Proposal {
+        return _Proposals.getProposals(id)
     };
 
-     system func postupgrade() {
-         _ProposalStable.postupgrade(_UsersUD);
-          _ProposalStable := null;
-     };*/
-
+    public query func get_all_proposals() : async [(Nat, PrivateTypes.Proposal)] {
+        return _Proposals.getAllProposals()
+    }
 }

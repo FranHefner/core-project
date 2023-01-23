@@ -15,7 +15,6 @@ module ProposalsDATA {
         var proposals = HashMap.HashMap<Nat, PrivateTypes.Proposal>(1, Nat.equal, Hash.hash);       
        
         public func getProposals(id : Nat) : ?PrivateTypes.Proposal {
-
            return proposals.get(id);
         };
 
@@ -28,14 +27,15 @@ module ProposalsDATA {
            return proposals.size();
         };
 
-        public func getAllProposals(): [(Nat, PrivateTypes.Proposal)] {
-        
+        public func getAllProposals(): [(Nat, PrivateTypes.Proposal)] {        
           return Iter.toArray<(Nat, PrivateTypes.Proposal)>(proposals.entries());
+        };
+
+        public func updateProposal(id : Nat, proposal:PrivateTypes.Proposal) {
+
+            proposals.put(id,proposal);
 
         }
-
-
-
   
 /*
         public func preupgrade() : Proposals {
@@ -49,7 +49,7 @@ module ProposalsDATA {
                 case(null) {};
                 case(? ud) {
                     for((principal, users) in ud.users.vals()){
-                        _users.put(principal, users);
+                        _Proposals.put(, );
                     };
                 };
             };
